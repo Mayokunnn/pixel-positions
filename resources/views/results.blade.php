@@ -5,7 +5,7 @@
         <x-forms.input name="q" placeholder="Web Developer..."/>
     </x-forms.form>
     @if(count($jobs) > 0)
-        <p class="my-3">Search for jobs, employers and tags with <span class="italic font-semibold">"{{$query}}"</span>
+        <p class="my-3">Search for <span class="italic font-semibold">"{{$query}}"</span>
         </p>
         <div class="space-y-6">
             @foreach($jobs as $job)
