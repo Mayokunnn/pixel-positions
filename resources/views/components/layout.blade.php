@@ -20,23 +20,35 @@
                 <img src="{{Vite::asset('resources/images/logo.svg')}}" alt="Pixel Positions">
             </a>
         </div>
-        <div class="space-x-6 font-bold">
-            <a href="">Jobs</a>
-            <a href="">Careers</a>
-            <a href="">Salaries</a>
-            <a href="">Companies</a>
+        <div class="space-x-6">
+            <x-nav-link href="/" :active="request()->is('/')">Jobs</x-nav-link>
+            <x-nav-link href="/careers" :active="request()->is('careers')">Careers</x-nav-link>
+            <x-nav-link href="/salaries" :active="request()->is('salaries')">Salaries</x-nav-link>
+            <x-nav-link href="/companies" :active="request()->is('companies')">Companies</x-nav-link>
         </div>
         @auth()
-            <a href="/jobs/create">Post a Job</a>
+            <div class="flex gap-x-5">
+                <a href="/jobs/create">Post a Job</a>
+                <form action="/logout" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="text-red-500 cursor-pointer font-semibold">Log Out
+                    </button>
+                </form>
+            </div>
         @endauth
 
         @guest()
-
+            <div class="space-x-6">
+                <x-nav-link href="/register" :active="request()->is('register')">Sign Up</x-nav-link>
+                <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
+            </div>
         @endguest
     </nav>
     <main class="mt-10 max-w-[986px] mx-auto">
         {{$slot}}
     </main>
 </div>
+
 </body>
 </html>
