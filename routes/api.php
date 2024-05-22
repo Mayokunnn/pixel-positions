@@ -14,7 +14,5 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
-
+    Route::apiResource('jobs', JobController::class);
 });
-
-Route::apiResource('jobs', JobController::class);

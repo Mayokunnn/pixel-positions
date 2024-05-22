@@ -20,7 +20,7 @@ class JobFactory extends Factory
     {
         return [
             'title' => fake()->jobTitle,
-            'salary' => "$" . fake()->numberBetween($min = 1, $max = 300) . "," . fake()->numberBetween($min = 100, $max = 999) . " USD",
+            'salary' => fake()->randomNumber(6, true),
             'location' => fake()->randomElement(['Remote', 'Hybrid', 'Onsite']),
             'schedule' => fake()->randomElement(['Full Time', 'Part Time']),
             'featured' => fake()->randomElement([true, false]),
