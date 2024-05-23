@@ -23,7 +23,7 @@ class JobResource extends JsonResource
                 'location' => $this->location,
                 'schedule' => $this->schedule,
                 'url' => $this->url,
-                'featured' => $this->featured == 1 ? true : false , 
+                'featured' => $this->featured == 1 ? true : false,
                 $this->mergeWhen(
                     $request->routeIs(['jobs.show']),
                     [
@@ -38,7 +38,7 @@ class JobResource extends JsonResource
                         'type' => 'employer',
                         'id' => $this->employer->id
                     ]
-                ]
+                ],
             ],
             'links' => [
                 'self' => route('jobs.show', ['job' => $this->id])

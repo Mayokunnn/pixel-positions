@@ -21,7 +21,7 @@ class JobFactory extends Factory
         return [
             'title' => fake()->jobTitle,
             'salary' => fake()->randomNumber(6, true),
-            'location' => fake()->randomElement(['Remote', 'Hybrid', 'Onsite']),
+            'location' => fake()->address(),
             'schedule' => fake()->randomElement(['Full Time', 'Part Time']),
             'featured' => fake()->randomElement([true, false]),
             'url' => fake()->url,

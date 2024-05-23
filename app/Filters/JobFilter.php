@@ -2,6 +2,9 @@
 
 namespace App\Filters;
 
+use App\Models\Tag;
+use Illuminate\Support\Facades\DB;
+
 class JobFilter extends QueryFilter
 {
     public function title($value)

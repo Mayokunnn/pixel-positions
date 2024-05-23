@@ -4,10 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Filters\JobFilter;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\ReplaceJobRequest;
+use App\Http\Requests\Api\StoreJobRequest;
+use App\Http\Requests\Api\UpdateJobRequest;
 use App\Http\Resources\JobResource;
+use App\Models\Employer;
 use App\Models\Job;
+use App\Models\User;
 use App\Traits\Api\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class JobController extends Controller
 {
@@ -23,50 +32,90 @@ class JobController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreJobRequest $request)
     {
-        //
+        $attributes = $request->all();
+        try {
+            $user = Auth::guard('sanctum')->user();
+            $employer = Employer::firstWhere('user_id', $user->id);
+            $attributes['employer_id'] = $employer->id;
+        } catch (HttpException $exception) {
+            if ($exception->getCode() === 401) {
+                return $this->error('Unauthorized', 401);
+            }
+            throw $exception; // Re-throw other exceptions
+        }
+
+
+
+        $attributes['featured'] = $request->has('featured');
+
+        return new JobResource(Job::create($attributes));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($job_id)
     {
-        //
+        try {
+            $job = Job::findOrFail($job_id)->load(['employer', 'tags']);
+            return new JobResource($job);
+        } catch (ModelNotFoundException $exception) {
+            return $this->error('Job cannot be found', 404);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateJobRequest $request, $job_id)
     {
-        //
+        try {
+            $job = Job::findOrFail($job_id);
+            $attributesToUpdate = $request->mappedAttributes();
+            if ($attributesToUpdate['tags'] ?? false) {
+                foreach (explode(',', $attributesToUpdate['tags']) as $tag) {
+                    $job->tag($tag);
+                }
+            }
+            $job->update(Arr::except($attributesToUpdate, 'tags'));
+            return new JobResource($job);
+        } catch (ModelNotFoundException $exception) {
+            return $this->error('Job not found', 404);
+        }
+    }
+
+    public function replace(ReplaceJobRequest $request, $job_id)
+    {
+        try {
+            $job = Job::findOrFail($job_id);
+            $attributes = $request->all();
+            if ($attributes['tags'] ?? false) {
+                foreach (explode(',', $attributes['tags']) as $tag) {
+                    $job->tag($tag);
+                }
+            }
+            $job->update(Arr::except($attributes, 'tags'));
+            return new JobResource($job);
+        } catch (ModelNotFoundException $exception) {
+            return $this->error('Job not found', 404);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($job_id)
     {
-        //
+        try {
+            Job::findOrFail($job_id)->delete();
+            return $this->success("Job Successfully deleted");
+        } catch (ModelNotFoundException $exception) {
+            return $this->error('Job cannot be found', 404);
+        }
     }
 }
