@@ -24,6 +24,7 @@ class JobResource extends JsonResource
                 'schedule' => $this->schedule,
                 'url' => $this->url,
                 'featured' => $this->featured == 1 ? true : false,
+                'tags' => $this->tags,
                 $this->mergeWhen(
                     $request->routeIs(['jobs.show']),
                     [

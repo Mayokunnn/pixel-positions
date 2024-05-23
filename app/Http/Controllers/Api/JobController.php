@@ -49,10 +49,15 @@ class JobController extends Controller
         }
 
 
-
         $attributes['featured'] = $request->has('featured');
+        $job = Job::create(Arr::except($attributes, 'tags'));
+        if ($attributes['tags'] ?? false) {
+            foreach (explode(',', $attributes['tags']) as $tag) {
+                $job->tag($tag);
+            }
+        }
 
-        return new JobResource(Job::create($attributes));
+        return new JobResource($job);
     }
 
     /**

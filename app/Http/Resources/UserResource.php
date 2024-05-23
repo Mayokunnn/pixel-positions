@@ -21,7 +21,7 @@ class UserResource extends JsonResource
                 'name' => $this->name,
                 'email' => $this->email,
                 $this->mergeWhen(
-                    $request->routeIs(['users.*', 'login.*', 'register.*']),
+                    $request->routeIs(['users.*']),
                     [
                         'emailVerifiedAt' => $this->email_verified_at,
                         'createdAt' => $this->created_at,
@@ -29,8 +29,11 @@ class UserResource extends JsonResource
                     ]
                 )
             ],
+            'includes' => [
+                'data' => new EmployersResource($this->whenLoaded('employer')),
+            ],
             'links' => [
-                // 'self' => route('users.show', ['user' => $this->id])
+                'self' => route('users.show', ['user' => $this->id])
             ]
         ];
     }

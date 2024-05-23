@@ -28,6 +28,17 @@ class EmployersResource extends JsonResource
                     ]
                 )
             ],
+            'relationships' => [
+                'author' => [
+                    'data' => [
+                        'type' => 'user',
+                        'id' => $this->user->id
+                    ]
+                ],
+            ],
+            'links' => [
+                'self' => route('employers.show', ['employer' => $this->id])
+            ]
         ];
     }
 }
