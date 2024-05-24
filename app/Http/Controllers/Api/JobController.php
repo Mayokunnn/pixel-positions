@@ -10,12 +10,12 @@ use App\Http\Requests\Api\UpdateJobRequest;
 use App\Http\Resources\JobResource;
 use App\Models\Employer;
 use App\Models\Job;
-use App\Models\User;
 use App\Traits\Api\Response;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class JobController extends Controller
@@ -27,7 +27,6 @@ class JobController extends Controller
     public function index(JobFilter $filters)
     {
         $jobs = Job::filter($filters)->latest()->with('employer', 'tags')->paginate();
-
         return JobResource::collection($jobs);
     }
 
@@ -81,6 +80,7 @@ class JobController extends Controller
     {
         try {
             $job = Job::findOrFail($job_id);
+            Gate::authorize('modify', $job);
             $attributesToUpdate = $request->mappedAttributes();
             if ($attributesToUpdate['tags'] ?? false) {
                 foreach (explode(',', $attributesToUpdate['tags']) as $tag) {
@@ -97,7 +97,8 @@ class JobController extends Controller
     public function replace(ReplaceJobRequest $request, $job_id)
     {
         try {
-            $job = Job::findOrFail($job_id);
+            $job = Job::findOrNew($job_id);
+            Gate::authorize('modify', $job);
             $attributes = $request->all();
             if ($attributes['tags'] ?? false) {
                 foreach (explode(',', $attributes['tags']) as $tag) {
@@ -117,10 +118,14 @@ class JobController extends Controller
     public function destroy($job_id)
     {
         try {
-            Job::findOrFail($job_id)->delete();
+            $job = Job::findOrFail($job_id);
+            Gate::authorize('modify', $job);
+            $job->delete();
             return $this->success("Job Successfully deleted");
         } catch (ModelNotFoundException $exception) {
             return $this->error('Job cannot be found', 404);
+        } catch (AuthorizationException $exception) {
+            return $this->error('You cannot edit this job', 404);
         }
     }
 }

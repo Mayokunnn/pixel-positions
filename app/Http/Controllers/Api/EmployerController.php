@@ -24,7 +24,7 @@ class EmployerController extends Controller
             $employer = Employer::filter($filters)->findOrFail($employer_id);
             return new EmployersResource($employer);
         } catch (ModelNotFoundException $exception) {
-            return $this->error('Tag not found', 404);
+            return $this->error('Employer not found', 404);
         }
     }
 }

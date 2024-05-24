@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class JobFilter extends QueryFilter
 {
+
+    protected $sortable = ['title', 'salary', 'location', 'schedule', 'url', 'createdAt' => 'created_at', 'updatedAt' => 'updated_at'];
     public function title($value)
     {
         $likeStr = str_replace('*', '%', $value);
@@ -43,13 +45,10 @@ class JobFilter extends QueryFilter
     {
         if ($value === 'true') {
             return $this->builder->where('featured', 1);
-        } else if($value === 'false'){
-            return 
-            $this->
-            builder->where('featured', 0);
+        } else if ($value === 'false') {
+            return
+                $this->builder->where('featured', 0);
         }
-
-
     }
 
     public function updatedAt($value)
