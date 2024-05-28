@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Employer;
 use App\Models\Job;
 use App\Models\User;
 use App\Policies\Api\JobPolicy;
@@ -29,5 +30,7 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
         Gate::policy(Job::class, JobPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(Employer::class, JobPolicy::class);
+
     }
 }

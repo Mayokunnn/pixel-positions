@@ -94,24 +94,6 @@ class JobController extends Controller
         }
     }
 
-    public function replace(ReplaceJobRequest $request, $job_id)
-    {
-        try {
-            $job = Job::findOrNew($job_id);
-            Gate::authorize('modify', $job);
-            $attributes = $request->all();
-            if ($attributes['tags'] ?? false) {
-                foreach (explode(',', $attributes['tags']) as $tag) {
-                    $job->tag($tag);
-                }
-            }
-            $job->update(Arr::except($attributes, 'tags'));
-            return new JobResource($job);
-        } catch (ModelNotFoundException $exception) {
-            return $this->error('Job not found', 404);
-        }
-    }
-
     /**
      * Remove the specified resource from storage.
      */

@@ -18,9 +18,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::get('/jobs', [JobController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('jobs', JobController::class)->except('update', 'index');
-    Route::patch('jobs/{job}', [JobController::class, 'update']);
-    Route::put('jobs/{job}', [JobController::class, 'replace']);
+    Route::apiResource('jobs', JobController::class)->except('index');
     Route::apiResource('tags', TagController::class);
     Route::apiResource('employers', EmployerController::class);
     Route::apiResource('employers.jobs', EmployerJobController::class);
